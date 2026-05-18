@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -8,11 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- ======================================================= -->
-    <!-- FIREBASE MODULE INTEGRATION -->
+    <!-- FIREBASE MODULE INTEGRATION WITH LIVE DELETE ENGINE -->
     <!-- ======================================================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCSzOjAtbkqU9vDYilVEn19PXH0twCtSaQ",
@@ -27,11 +26,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Form Submit Actions
+        // Data Upload Logic
         window.uploadData = function(type) {
-            const statusDiv = document.getElementById('status-msg');
-            statusDiv.style.display = "none";
-
             if (type === 'notes') {
                 const category = document.getElementById('note-category').value;
                 const title = document.getElementById('note-title').value.trim();
@@ -44,7 +40,7 @@
                 const newNoteRef = push(targetRef);
                 set(newNoteRef, { title: title, description: desc, link: link })
                 .then(() => { showStatus('Notes successfully publish ho gaye hain!'); resetForm('notes-form'); })
-                .catch(() => { showStatus('Kuch error aayi, fir koshish karein.', true); });
+                .catch(() => { showStatus('Error aayi, fir koshish karein.', true); });
 
             } else if (type === 'quiz') {
                 const question = document.getElementById('q-text').value.trim();
@@ -79,6 +75,95 @@
             }
         }
 
+        // Live Data Sync for Management Tab
+        window.loadManageData = function() {
+            const listContainer = document.getElementById('live-data-list');
+            listContainer.innerHTML = "<p style='text-align:center;color:#7f8c8d;font-size:0.85rem;'>Database se items load ho rahe hain...</p>";
+
+            // Fetch Notes
+            const categories = ['agriculture_supervisor', 'jet_exam', 'cuet_exam'];
+            let htmlContent = "";
+
+            categories.forEach(cat => {
+                const noteRef = ref(db, `notes/${cat}`);
+                onValue(noteRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        let catName = cat.replace(/_/g, ' ').toUpperCase();
+                        htmlContent += `<div class="manage-cat-header">${catName} (NOTES)</div>`;
+                        for (let key in data) {
+                            htmlContent += `
+                                <div class="manage-item-card">
+                                    <div class="item-details">
+                                        <h4>${data[key].title}</h4>
+                                        <p>${data[key].description || 'No description'}</p>
+                                    </div>
+                                    <button class="delete-btn" onclick="deleteFirebaseItem('notes/${cat}/${key}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>`;
+                        }
+                        listContainer.innerHTML = htmlContent || "<p style='text-align:center;color:#7f8c8d;padding:20px;'>Abhi database me koi data nahi hai.</p>";
+                    }
+                });
+            });
+
+            // Fetch Quizzes
+            onValue(ref(db, 'quizzes/daily_quiz'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    htmlContent += `<div class="manage-cat-header" style="background:#e8f0fe; color:#1a73e8;">DAILY PRACTICE QUIZZES</div>`;
+                    for (let key in data) {
+                        htmlContent += `
+                            <div class="manage-item-card">
+                                <div class="item-details">
+                                    <h4><b>Q:</b> ${data[key].question}</h4>
+                                    <p>Ans: Option ${data[key].correct}</p>
+                                </div>
+                                <button class="delete-btn" onclick="deleteFirebaseItem('quizzes/daily_quiz/${key}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>`;
+                    }
+                    listContainer.innerHTML = htmlContent;
+                }
+            });
+
+            // Fetch Job Alerts
+            onValue(ref(db, 'job_alerts'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    htmlContent += `<div class="manage-cat-header" style="background:#fde8e8; color:#c62828;">GOVT. JOB ALERTS</div>`;
+                    for (let key in data) {
+                        htmlContent += `
+                            <div class="manage-item-card">
+                                <div class="item-details">
+                                    <h4>${data[key].title}</h4>
+                                    <p>Last Date: ${data[key].lastDate || 'N/A'}</p>
+                                </div>
+                                <button class="delete-btn" onclick="deleteFirebaseItem('job_alerts/${key}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>`;
+                    }
+                    listContainer.innerHTML = htmlContent;
+                }
+            });
+        }
+
+        // Live Delete Execution Function
+        window.deleteFirebaseItem = function(path) {
+            if (confirm("⚠️ Kya aap sach me is item ko hamesha ke liye delete karna chahte hain?")) {
+                const itemRef = ref(db, path);
+                remove(itemRef)
+                .then(() => { 
+                    showStatus("Item successfully delete kar diya gaya!");
+                    loadManageData(); // Reload panel list
+                })
+                .catch(() => { alert("Error! Delete nahi ho paya."); });
+            }
+        }
+
         function showStatus(msg, isError = false) {
             const statusDiv = document.getElementById('status-msg');
             statusDiv.innerText = msg;
@@ -97,7 +182,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f4f7f5; color: #2c3e50; min-height: 100vh; }
 
-        /* Security Lock Screen CSS */
+        /* Security Lock Screen */
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e3d1a; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
@@ -109,50 +194,55 @@
         .pin-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1.3rem; text-align: center; letter-spacing: 10px; font-weight: bold; margin-bottom: 15px; outline: none; }
         .pin-input:focus { border-color: #2d5a27; }
         .unlock-btn { background: #2d5a27; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-        .unlock-btn:active { background: #1e3d1a; }
 
-        /* Main Dashboard UI Layout */
+        /* Main Dashboard Layout */
         #admin-dashboard { display: none; padding-bottom: 40px; }
         
         header { background: #ffffff; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.04); border-bottom: 1px solid #eef2f0; }
         header h1 { font-size: 1.1rem; font-weight: 600; color: #1e3d1a; display: flex; align-items: center; gap: 8px; }
-        .logout-btn { background: #fff5f5; color: #c62828; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .logout-btn { background: #fff5f5; color: #c62828; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
 
-        /* Navigation Tab Switcher */
-        .tabs-container { display: flex; background: white; margin: 15px; padding: 5px; border-radius: 14px; border: 1px solid #eef2f0; gap: 5px; }
-        .tab-btn { flex: 1; border: none; padding: 10px 5px; background: transparent; color: #7f8c8d; font-size: 0.78rem; font-weight: 500; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        /* Tabs Navigation Bar */
+        .tabs-container { display: flex; background: white; margin: 15px; padding: 5px; border-radius: 14px; border: 1px solid #eef2f0; gap: 5px; overflow-x: auto; }
+        .tab-btn { flex: 1; border: none; padding: 10px 2px; background: transparent; color: #7f8c8d; font-size: 0.75rem; font-weight: 500; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 75px; }
         .tab-btn.active { background: #2d5a27; color: white; font-weight: 600; }
-        .tab-btn i { font-size: 1.1rem; }
+        .tab-btn i { font-size: 1rem; }
 
-        /* Form Configuration Sheets */
+        /* Panels Container */
         .panel-wrapper { padding: 0 15px; }
         .form-panel { background: white; border-radius: 20px; padding: 20px; border: 1px solid #eef2f0; box-shadow: 0 4px 15px rgba(0,0,0,0.01); display: none; }
         .form-panel.active { display: block; }
         .panel-title { font-size: 1.05rem; font-weight: 600; color: #2c3e50; margin-bottom: 18px; border-bottom: 2px solid #f4f7f5; padding-bottom: 8px; }
 
-        /* Custom Form Controls */
+        /* Form Controls */
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.3px; }
+        .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.9rem; color: #334155; outline: none; background: #f8fafc; }
         .form-control:focus { border-color: #2d5a27; background: #ffffff; }
-        select.form-control { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
         textarea.form-control { resize: none; min-height: 80px; }
 
-        /* Action Buttons */
-        .submit-btn { width: 100%; background: #2d5a27; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; cursor: pointer; }
-        .submit-btn:active { background: #1e3d1a; }
+        .submit-btn { width: 100%; background: #2d5a27; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
 
         /* Global Status Alerts Banner */
         .status-box { margin: 15px; padding: 12px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 500; text-align: center; display: none; }
         .status-box.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
         .status-box.error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+        /* ======================================================= -->
+        /* SYSTEM LIVE DATABASE MANAGER SYSTEM CARD CSS */
+        /* ======================================================= --> */
+        .manage-cat-header { background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin: 15px 0 8px 0; letter-spacing: 0.5px; }
+        .manage-item-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 8px; }
+        .item-details { flex: 1; }
+        .item-details h4 { font-size: 0.88rem; color: #1e293b; font-weight: 600; margin-bottom: 2px; }
+        .item-details p { font-size: 0.75rem; color: #64748b; line-height: 1.3; }
+        .delete-btn { background: #fff5f5; color: #ef4444; border: 1px solid #fee2e2; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .delete-btn:active { background: #fee2e2; transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <!-- ======================================================= -->
-    <!-- PIN PROTECTION SECURITY WALL -->
-    <!-- ======================================================= -->
+    <!-- PIN PROTECTION WALL -->
     <div id="lock-screen">
         <div class="lock-box">
             <i class="fas fa-user-shield"></i>
@@ -163,12 +253,9 @@
         </div>
     </div>
 
-    <!-- ======================================================= -->
     <!-- MAIN LIVE COMMAND CENTER -->
-    <!-- ======================================================= -->
     <div id="admin-dashboard">
         
-        <!-- Header Console -->
         <header>
             <h1><i class="fas fa-sliders-h"></i> Control Dashboard</h1>
             <button class="logout-btn" onclick="lockSystem()">Lock Panel</button>
@@ -185,12 +272,13 @@
             <button class="tab-btn" onclick="switchControlTab(this, 'job-panel')">
                 <i class="fas fa-bullhorn"></i> Job Alerts
             </button>
+            <button class="tab-btn" onclick="switchControlTab(this, 'manage-panel'); loadManageData();" style="background: #fff8e1; color: #b78103;">
+                <i class="fas fa-tasks"></i> Manage Live
+            </button>
         </div>
 
-        <!-- Global Response Messenger -->
         <div id="status-msg" class="status-box"></div>
 
-        <!-- Forms Wrapper -->
         <div class="panel-wrapper">
 
             <!-- SHEET 1: STUDY NOTES CONTROLLER -->
@@ -207,11 +295,11 @@
                     </div>
                     <div class="form-group">
                         <label>Topic / Title</label>
-                        <input type="text" id="note-title" class="form-control" placeholder="e.g., सस्य विज्ञान (Agronomy) Part 1">
+                        <input type="text" id="note-title" class="form-control" placeholder="e.g., सस्य विज्ञान Part 1">
                     </div>
                     <div class="form-group">
                         <label>Description (Optional)</label>
-                        <textarea id="note-desc" class="form-control" placeholder="Short description ya chapters ki jankari..."></textarea>
+                        <textarea id="note-desc" class="form-control" placeholder="Short description..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>PDF Link / Google Drive URL</label>
@@ -232,23 +320,19 @@
                         <textarea id="q-text" class="form-control" placeholder="Type question here..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Option A</label>
-                        <input type="text" id="q-a" class="form-control" placeholder="Option A text">
+                        <label>Option A</label><input type="text" id="q-a" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Option B</label>
-                        <input type="text" id="q-b" class="form-control" placeholder="Option B text">
+                        <label>Option B</label><input type="text" id="q-b" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Option C</label>
-                        <input type="text" id="q-c" class="form-control" placeholder="Option C text">
+                        <label>Option C</label><input type="text" id="q-c" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Option D</label>
-                        <input type="text" id="q-d" class="form-control" placeholder="Option D text">
+                        <label>Option D</label><input type="text" id="q-d" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Correct Answer Value (Bilkul sehi matching option dalein)</label>
+                        <label>Correct Answer Value</label>
                         <select id="q-correct" class="form-control">
                             <option value="A">Option A</option>
                             <option value="B">Option B</option>
@@ -268,15 +352,15 @@
                 <form id="job-form" onsubmit="event.preventDefault();">
                     <div class="form-group">
                         <label>Job Title / Vacancy Name</label>
-                        <input type="text" id="job-title" class="form-control" placeholder="e.g., Agriculture Supervisor New Bharti 2026">
+                        <input type="text" id="job-title" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Department Name</label>
-                        <input type="text" id="job-dept" class="form-control" placeholder="e.g., RSMSSB / Agriculture Dept.">
+                        <input type="text" id="job-dept" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Short Details</label>
-                        <textarea id="job-desc" class="form-control" placeholder="Kul pad, yogyata aadi short me likhein..."></textarea>
+                        <textarea id="job-desc" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
                         <label>Last Date To Apply</label>
@@ -284,7 +368,7 @@
                     </div>
                     <div class="form-group">
                         <label>Notification PDF / Apply Link</label>
-                        <input type="url" id="job-link" class="form-control" placeholder="https://...">
+                        <input type="url" id="job-link" class="form-control">
                     </div>
                     <button type="button" class="submit-btn" onclick="uploadData('job')">
                         <i class="fas fa-paper-plane"></i> Broadcast Job Alert
@@ -292,15 +376,23 @@
                 </form>
             </div>
 
+            <!-- ======================================================= -->
+            <!-- SHEET 4: NEW LIVE DATABASE MANAGER PANEL -->
+            <!-- ======================================================= -->
+            <div id="manage-panel" class="form-panel">
+                <h2 class="panel-title">Manage & Delete Live Content</h2>
+                <div id="live-data-list">
+                    <!-- Live database elements will append here dynamically -->
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- UI ELEMENT INTERACTION LOGIC SCRIPT -->
     <script>
-        // System Protection Logic
+        // System Protection Lock Verification PIN = 2525
         function verifySystemPIN() {
             const pinEntered = document.getElementById('security-pin').value;
-            // MASTER SECURITY PASSWORD = 2525
             if (pinEntered === "2525") {
                 document.getElementById('lock-screen').style.display = "none";
                 document.getElementById('admin-dashboard').style.display = "block";
@@ -316,28 +408,12 @@
             document.getElementById('admin-dashboard').style.display = "none";
         }
 
-        // Section Tabs Navigation Management
         function switchControlTab(btnElement, targetPanelId) {
-            // Remove active classes from other tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
-            
-            // Add active focus to selected dashboard layer
             btnElement.classList.add('active');
             document.getElementById(targetPanelId).classList.add('active');
         }
     </script>
-</body>
-</html>
-
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
-</head>
-<body>
-  <h1>
-    Hello, World!
-  </h1>
 </body>
 </html>
