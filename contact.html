@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Ved Agro Bright</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f4f7f5; color: #2c3e50; padding-bottom: 30px; }
+
+        /* Professional Header Custom App Bar */
+        header {
+            background: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #eef2f0;
+        }
+        .back-circle { width: 38px; height: 38px; background: #f0f4f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d5a27; text-decoration: none; font-size: 0.95rem; }
+        header h1 { font-size: 1.1rem; font-weight: 600; color: #1e3d1a; }
+
+        /* Premium Hero Section */
+        .contact-banner {
+            background: linear-gradient(135deg, #1e3d1a 0%, #2d5a27 100%);
+            color: white;
+            padding: 35px 20px;
+            margin: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(45,90,39,0.12);
+        }
+        .contact-banner h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+        .contact-banner p { font-size: 0.82rem; color: #cbd5e0; font-weight: 300; line-height: 1.4; }
+
+        /* Main Grid Wrapper */
+        .main-wrapper { padding: 5px 15px; display: flex; flex-direction: column; gap: 15px; }
+        .section-headline { font-size: 0.85rem; font-weight: 600; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; padding-left: 2px; }
+
+        /* Social Connection Cards Grid Style */
+        .connect-stack { display: flex; flex-direction: column; gap: 14px; }
+        
+        .connect-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            border: 1px solid #eef2f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .connect-card:active { transform: scale(0.98); background: #fafafa; }
+        
+        .card-left { display: flex; align-items: center; gap: 15px; }
+        
+        /* Brand Colors Icon Box Setup */
+        .icon-box {
+            width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+        }
+        .gmail-box { background: #fde8e8; color: #c62828; }
+        .instagram-box { background: #fce4ec; color: #d81b60; }
+        .facebook-box { background: #e8f0fe; color: #1a73e8; }
+        
+        .info-block span { font-size: 0.72rem; color: #95a5a6; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+        .info-block h3 { font-size: 0.95rem; font-weight: 600; color: #2c3e50; }
+
+        .arrow-right { color: #bdc3c7; font-size: 0.9rem; }
+
+        /* Support Note Box */
+        .note-card {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .note-card i { color: #f57f17; font-size: 1.1rem; margin-top: 2px; }
+        .note-card p { font-size: 0.8rem; color: #5d4037; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <!-- Top App Navigation Bar -->
+    <header>
+        <a href="index.html" class="back-circle"><i class="fas fa-chevron-left"></i></a>
+        <h1>Contact Us</h1>
+    </header>
+
+    <!-- Support Portal Hero Banner -->
+    <div class="contact-banner">
+        <h2>सम्पर्क सूत्र (Help & Support)</h2>
+        <p>यदि आपको नोट्स डाउनलोड करने, क्विज देने या किसी अन्य सेवा में समस्या आ रही है, तो आप हमसे नीचे दिए गए माध्यमों से जुड़ सकते हैं।</p>
+    </div>
+
+    <!-- Contact Link Wrapper Container -->
+    <div class="main-wrapper">
+        <h3 class="section-headline">Official Channels</h3>
+        
+        <div class="connect-stack">
+            
+            <!-- Gmail Account Redirect Card -->
+            <a href="mailto:vedagrobright@gmail.com" class="connect-card" target="_blank">
+                <div class="card-left">
+                    <div class="icon-box gmail-box">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-block">
+                        <span>Email Support</span>
+                        <h3>vedagrobright@gmail.com</h3>
+                    </div>
+                </div>
+                <div class="arrow-right"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+            <!-- Instagram Redirect Card -->
+            <a href="https://instagram.com/ved_agro_bright" class="connect-card" target="_blank">
+                <div class="card-left">
+                    <div class="icon-box instagram-box">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    <div class="info-block">
+                        <span>Instagram Handles</span>
+                        <h3>@ved_agro_bright</h3>
+                    </div>
+                </div>
+                <div class="arrow-right"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+            <!-- Facebook Redirect Card -->
+            <a href="https://www.facebook.com/search/top?q=Ved%20Agro%20Bright" class="connect-card" target="_blank">
+                <div class="card-left">
+                    <div class="icon-box facebook-box">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="info-block">
+                        <span>Facebook Community</span>
+                        <h3>Ved Agro Bright</h3>
+                    </div>
+                </div>
+                <div class="arrow-right"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+        </div>
+
+        <!-- Note Guidance Frame -->
+        <div class="note-card">
+            <i class="fas fa-info-circle"></i>
+            <p><b>Note:</b> नोट्स के रिगार्डिंग किसी भी प्रकार की पूछताछ के लिए आप हमें ईमेल या इंस्टाग्राम पर डायरेक्ट मैसेज कर सकते हैं। हमारी टीम 24 घंटे के अंदर आपकी समस्या का समाधान करेगी।</p>
+        </div>
+    </div>
+
+</body>
+</html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Hello, World!</title>
+</head>
+<body>
+  <h1>
+    Hello, World!
+  </h1>
+</body>
+</html>

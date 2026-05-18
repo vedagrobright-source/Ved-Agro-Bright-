@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ved Agro Bright - Agriculture Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- ======================================================= -->
+    <!-- FIREBASE INTEGRATION SETUP -->
+    <!-- ======================================================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSzOjAtbkqU9vDYilVEn19PXH0twCtSaQ",
+            authDomain: "ved-agro-bright.firebaseapp.com",
+            projectId: "ved-agro-bright",
+            storageBucket: "ved-agro-bright.firebasestorage.app",
+            messagingSenderId: "755278018836",
+            appId: "1:755278018836:web:1de993df0e3af3d06aaa01",
+            measurementId: "G-WNQNZW4MQQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log("Firebase Active on Secure Mobile View!");
+    </script>
+    <!-- ======================================================= -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f7f9f8; color: #333; }
+
+        /* Mobile Header */
+        header {
+            background-color: #2d5a27;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        /* Secret Link Trigger Area */
+        .logo { font-size: 1.3rem; font-weight: 700; text-decoration: none; color: white; letter-spacing: 0.5px; cursor: pointer; user-select: none; }
+        .logo span { color: #ffcc00; }
+        .nav-icon { font-size: 1.3rem; color: #ffcc00; }
+
+        /* Mobile Hero Banner */
+        .hero {
+            background: linear-gradient(rgba(45, 90, 39, 0.85), rgba(30, 61, 26, 0.95)), url('https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=600&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.2);
+        }
+        .hero h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+        .hero p { font-size: 0.9rem; max-width: 100%; opacity: 0.9; font-weight: 300; line-height: 1.5; }
+
+        /* Main App Container */
+        .app-container { padding: 25px 15px; display: flex; flex-direction: column; gap: 25px; }
+
+        .section-title { color: #2d5a27; font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .section-title::after { content: ''; flex: 1; height: 2px; background: #eee; margin-left: 10px; }
+
+        /* Quick Links Row (Only Public Features) */
+        .quick-links-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 5px 2px 15px; margin-top: -5px; scrollbar-width: none; }
+        .quick-links-scroll::-webkit-scrollbar { display: none; }
+        
+        .quick-btn { background: white; padding: 12px 28px; border-radius: 50px; text-decoration: none; color: #444; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eaeaea; white-space: nowrap; transition: 0.2s; width: 50%; justify-content: center; }
+        .quick-btn i { color: #2d5a27; }
+        .quick-btn:active { background: #e8f5e9; transform: scale(0.95); }
+
+        /* Full Width Mobile Category Cards */
+        .category-list { display: flex; flex-direction: column; gap: 15px; }
+        .category-card { background: white; border-radius: 16px; padding: 20px; text-decoration: none; color: #333; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-left: 5px solid #2d5a27; transition: 0.2s; }
+        .category-card:active { transform: scale(0.98); background: #fafafa; }
+        
+        .icon-box { width: 50px; height: 50px; background: #e8f5e9; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #2d5a27; flex-shrink: 0; }
+        .card-info { flex: 1; }
+        .card-info h3 { font-size: 1.05rem; font-weight: 600; color: #1e3d1a; margin-bottom: 4px; }
+        .card-info p { color: #777; font-size: 0.8rem; line-height: 1.4; }
+        .arrow-icon { color: #ccc; font-size: 0.9rem; }
+
+        /* Mobile Friendly Footer */
+        footer { background: #1e221f; color: #a0a5a1; text-align: center; padding: 30px 20px; margin-top: 40px; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        footer p { font-size: 0.8rem; }
+        .footer-links { margin-top: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .footer-links a { color: #ffcc00; text-decoration: none; font-size: 0.8rem; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Setup for Mobile with Secret Feature -->
+    <header>
+        <div class="logo" id="secretAdminTrigger">VED AGRO <span>BRIGHT</span></div>
+        <i class="fas fa-graduation-cap nav-icon"></i>
+    </header>
+
+    <!-- Mobile Responsive Banner -->
+    <div class="hero">
+        <h1>Ved Agro Bright</h1>
+        <p>Agriculture exams (JET, CUET, Supervisor) ki taiyari ab hui aasaan. Sabhi free notes aur tests yahan milenge.</p>
+    </div>
+
+    <div class="app-container">
+        
+        <!-- Public Quick Navigation Features Only -->
+        <div>
+            <h2 class="section-title"><i class="fas fa-star" style="color: #ffcc00;"></i> Quick Features</h2>
+            <div class="quick-links-scroll">
+                <a href="practice-quiz.html" class="quick-btn"><i class="fas fa-pen-alt"></i> Daily Quiz</a>
+                <a href="job-alerts.html" class="quick-btn"><i class="fas fa-bell"></i> Job Alerts</a>
+            </div>
+        </div>
+
+        <!-- Vertical Mobile Category Stack -->
+        <div>
+            <h2 class="section-title"><i class="fas fa-book-open"></i> Study Material</h2>
+            <div class="category-list">
+                
+                <a href="agri-supervisor.html" class="category-card">
+                    <div class="icon-box"><i class="fas fa-tractor"></i></div>
+                    <div class="card-info">
+                        <h3>Agriculture Supervisor</h3>
+                        <p>Syllabus, free premium notes aur solved papers.</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <a href="jet-exam.html" class="category-card">
+                    <div class="icon-box"><i class="fas fa-seedling"></i></div>
+                    <div class="card-info">
+                        <h3>JET Exam Portal</h3>
+                        <p>Rajasthan JET entrance exam ki high-quality study files.</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+
+                <a href="cuet-exam.html" class="category-card">
+                    <div class="icon-box"><i class="fas fa-university"></i></div>
+                    <div class="card-info">
+                        <h3>CUET Agriculture</h3>
+                        <p>Central University ke liye strict syllabus wise notes.</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mobile Friendly Footer -->
+    <footer>
+        <p>&copy; 2026 Ved Agro Bright. Built for Smart Learners.</p>
+        <div class="footer-links">
+            <a href="about.html">About</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </footer>
+
+    <!-- Secret Script for Opening Admin Panel -->
+    <script>
+        const trigger = document.getElementById('secretAdminTrigger');
+        let clickCount = 0;
+
+        trigger.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 3) {
+                clickCount = 0;
+                // Aapki admin file ka naam yahan sahi karein agar alag ho toh
+                window.location.href = 'admin.html'; 
+            }
+            // 2 second baad counter reset ho jayega agar user ruk jata hai toh
+            setTimeout(() => { clickCount = 0; }, 2000);
+        });
+    </script>
+
+</body>
+</html>
