@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Practice Quiz - Ved Agro Bright</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- ======================================================= -->
-    <!-- FIREBASE REALTIME DATABASE SETUP -->
-    <!-- ======================================================= -->
+    <title>Daily Quiz - Ved Agro Bright</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f4f7f5; padding: 20px; }
+        
+        .quiz-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .question { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: #1e3d1a; }
+        
+        .option-btn {
+            width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eef2f0;
+            border-radius: 12px; background: #fff; cursor: pointer; text-align: left;
+            font-size: 0.95rem; transition: 0.3s;
+        }
+        .option-btn:hover { background: #f0f4f1; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-card" id="quiz-container">
+        <!-- Data Firebase se yahan load hoga -->
+        <div id="quiz-content">Loading Question...</div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -18,259 +35,49 @@
             apiKey: "AIzaSyCSzOjAtbkqU9vDYilVEn19PXH0twCtSaQ",
             authDomain: "ved-agro-bright.firebaseapp.com",
             projectId: "ved-agro-bright",
-            storageBucket: "ved-agro-bright.firebasestorage.app",
-            messagingSenderId: "755278018836",
-            appId: "1:755278018836:web:1de993df0e3af3d06aaa01",
-            measurementId: "G-WNQNZW4MQQ"
+            databaseURL: "https://ved-agro-bright-default-rtdb.firebaseio.com"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Quiz data fetch karne ka path
-        const quizRef = ref(db, 'quizzes/daily_quiz');
-        
-        onValue(quizRef, (snapshot) => {
+        // Fetch Quiz Data
+        onValue(ref(db, 'quizzes/daily_quiz'), (snapshot) => {
             const data = snapshot.val();
-            const container = document.getElementById('dynamic-quiz-wrapper');
-            const skeleton = document.getElementById('loading-skeleton');
-            
-            container.innerHTML = ""; 
-            skeleton.style.display = "none"; 
+            const container = document.getElementById('quiz-content');
+            container.innerHTML = "";
 
-            if (data) {
-                let qIndex = 1;
-                Object.keys(data).forEach((key) => {
-                    const item = data[key];
-                    const questionHTML = `
-                        <div class="quiz-card" id="q-card-${key}">
-                            <div class="quiz-header">
-                                <span class="q-number">Question ${qIndex}</span>
-                                <span class="q-tag"><i class="far fa-clock"></i> 2026 Live</span>
-                            </div>
-                            <h3 class="question-text">${item.question}</h3>
-                            
-                            <div class="options-stack">
-                                <button class="option-btn" onclick="checkAnswer(this, '${item.optionA}', '${item.correct}', '${key}')">
-                                    <span class="opt-prefix">A</span> <span class="opt-text">${item.optionA}</span>
-                                </button>
-                                <button class="option-btn" onclick="checkAnswer(this, '${item.optionB}', '${item.correct}', '${key}')">
-                                    <span class="opt-prefix">B</span> <span class="opt-text">${item.optionB}</span>
-                                </button>
-                                <button class="option-btn" onclick="checkAnswer(this, '${item.optionC}', '${item.correct}', '${key}')">
-                                    <span class="opt-prefix">C</span> <span class="opt-text">${item.optionC}</span>
-                                </button>
-                                <button class="option-btn" onclick="checkAnswer(this, '${item.optionD}', '${item.correct}', '${key}')">
-                                    <span class="opt-prefix">D</span> <span class="opt-text">${item.optionD}</span>
-                                </button>
-                            </div>
-                            
-                            <div class="feedback-msg" id="feedback-${key}"></div>
-                        </div>
-                    `;
-                    container.insertAdjacentHTML('beforeend', questionHTML);
-                    qIndex++;
-                });
-            } else {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="fas fa-pen-alt"></i></div>
-                        <h3>No Quiz Active Today</h3>
-                        <p>Admin panel se naye questions dalte hi wo turant yahan live test ke liye show ho jayenge.</p>
-                    </div>
+            for (let key in data) {
+                const q = data[key];
+                container.innerHTML += `
+                    <div class="question">${q.question}</div>
+                    <button class="option-btn" onclick="checkAnswer('A', '${q.correct}', this)">A: ${q.optionA}</button>
+                    <button class="option-btn" onclick="checkAnswer('B', '${q.correct}', this)">B: ${q.optionB}</button>
+                    <button class="option-btn" onclick="checkAnswer('C', '${q.correct}', this)">C: ${q.optionC}</button>
+                    <button class="option-btn" onclick="checkAnswer('D', '${q.correct}', this)">D: ${q.optionD}</button>
                 `;
             }
         });
-    </script>
-    <!-- ======================================================= -->
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f4f7f5; color: #2c3e50; padding-bottom: 40px; }
-
-        /* Professional Header Custom App Bar */
-        header {
-            background: #ffffff;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
-            border-bottom: 1px solid #eef2f0;
-        }
-        .back-circle { width: 38px; height: 38px; background: #f0f4f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2d5a27; text-decoration: none; font-size: 0.95rem; }
-        header h1 { font-size: 1.1rem; font-weight: 600; color: #1e3d1a; }
-        .header-badge { background: #ffebee; color: #c62828; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
-
-        /* Quiz Banner Section */
-        .premium-banner {
-            background: linear-gradient(135deg, #2d5a27 0%, #117a65 100%);
-            color: white;
-            padding: 30px 20px;
-            margin: 15px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(45, 90, 39, 0.15);
-        }
-        .banner-content h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
-        .banner-content p { font-size: 0.82rem; color: #d1f2eb; font-weight: 300; line-height: 1.4; }
-
-        /* Main Container Wrapper */
-        .main-wrapper { padding: 5px 15px; }
-        .section-headline { font-size: 0.85rem; font-weight: 600; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 15px; }
-
-        /* Quiz Question Card Stack */
-        .quiz-stack { display: flex; flex-direction: column; gap: 20px; }
-        
-        .quiz-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-            border: 1px solid #eef2f0;
-        }
-        
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .q-number { font-size: 0.85rem; font-weight: 600; color: #2d5a27; background: #e8f5e9; padding: 3px 12px; border-radius: 30px; }
-        .q-tag { font-size: 0.75rem; color: #95a5a6; }
-
-        .question-text { font-size: 1rem; font-weight: 600; color: #2c3e50; line-height: 1.4; margin-bottom: 18px; }
-
-        /* Interactive Options Button System */
-        .options-stack { display: flex; flex-direction: column; gap: 10px; }
-        
-        .option-btn {
-            background: #f8faf9;
-            border: 1px solid #e2e8f0;
-            padding: 14px 16px;
-            border-radius: 12px;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-        
-        .opt-prefix {
-            width: 28px; height: 28px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; color: #64748b; flex-shrink: 0;
-        }
-        .opt-text { font-size: 0.9rem; color: #334155; font-weight: 500; }
-
-        /* Dynamic Classes for Quiz Answer Validation */
-        .option-btn.correct-choice { background: #e8f5e9; border-color: #2e7d32; }
-        .option-btn.correct-choice .opt-prefix { background: #2e7d32; color: white; border-color: #2e7d32; }
-        
-        .option-btn.wrong-choice { background: #fde8e8; border-color: #c62828; }
-        .option-btn.wrong-choice .opt-prefix { background: #c62828; color: white; border-color: #c62828; }
-        
-        .option-btn.disabled { pointer-events: none; opacity: 0.8; }
-
-        /* Feedback Message Box */
-        .feedback-msg { margin-top: 12px; font-size: 0.8rem; font-weight: 600; padding-left: 5px; display: none; }
-        .feedback-msg.correct { color: #2e7d32; display: block; }
-        .feedback-msg.wrong { color: #c62828; display: block; }
-
-        /* Loading Skeleton UI */
-        .skeleton-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #eef2f0; }
-        .skeleton-line { height: 14px; background: #eaeaea; border-radius: 4px; margin-bottom: 12px; animation: pulse 1.5s infinite linear; }
-        .skeleton-line.short { width: 40%; }
-        .skeleton-opt { height: 45px; background: #fafafa; border-radius: 12px; margin-bottom: 8px; animation: pulse 1.5s infinite linear; }
-        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-
-        /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; color: #95a5a6; }
-        .empty-icon { width: 70px; height: 70px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem; color: #bdc3c7; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .empty-state h3 { font-size: 1.1rem; color: #2c3e50; font-weight: 600; margin-bottom: 5px; }
-        .empty-state p { font-size: 0.8rem; max-width: 250px; margin: 0 auto; line-height: 1.4; }
-    </style>
-</head>
-<body>
-
-    <!-- App Header Top Bar -->
-    <header>
-        <a href="index.html" class="back-circle"><i class="fas fa-chevron-left"></i></a>
-        <h1>Daily Practice Test</h1>
-        <div class="header-badge"><i class="fas fa-circle" style="font-size: 7px; animation: pulse 1s infinite;"></i> Live Quiz</div>
-    </header>
-
-    <!-- Quiz Banner -->
-    <div class="premium-banner">
-        <div class="banner-content">
-            <h2>अपनी तैयारी जांचें</h2>
-            <p>Agriculture Supervisor, JET aur CUET ke important objects sawaal. Roz naye sawaal solve karein.</p>
-        </div>
-    </div>
-
-    <!-- Main Section Structure -->
-    <div class="main-wrapper">
-        <h3 class="section-headline">Today's Questions</h3>
-
-        <!-- Loading Shimmer State -->
-        <div id="loading-skeleton" class="quiz-stack">
-            <div class="skeleton-card">
-                <div class="skeleton-line short"></div>
-                <div class="skeleton-line"></div>
-                <div class="skeleton-opt"></div>
-                <div class="skeleton-opt"></div>
-            </div>
-        </div>
-
-        <!-- Live Quiz Injection Stack -->
-        <div class="quiz-stack" id="dynamic-quiz-wrapper">
-            <!-- Questions automatically generated via Firebase here -->
-        </div>
-    </div>
-
-    <!-- Interactive JavaScript Logic for Options Click Verification -->
-    <script>
-        function checkAnswer(selectedBtn, selectedText, correctValue, cardId) {
-            const card = document.getElementById(`q-card-${cardId}`);
-            const allButtons = card.querySelectorAll('.option-btn');
-            const feedback = document.getElementById(`feedback-${cardId}`);
+        // Global function to check answer
+        window.checkAnswer = function(selected, correct, element) {
+            const parent = element.parentElement;
+            const buttons = parent.querySelectorAll('.option-btn');
             
-            // Sabhi buttons ko disable karein taaki user dobara click na kar sake
-            allButtons.forEach(btn => {
-                btn.classList.add('disabled');
-                
-                // Agar button ka text correctValue (jo Admin se aayi hai, jaise 'A', 'B' etc) ke barabar option data se match kare toh use sahi btao
-                const currentOptText = btn.querySelector('.opt-text').innerText;
-                
-                // Agar user ne jo click kiya h wo sahi h ya koi b button jo correct answer h use highlight karein
-                if (btn === selectedBtn) {
-                    if (selectedText === correctValue) {
-                        btn.classList.add('correct-choice');
-                        feedback.innerHTML = `<i class="fas fa-check-circle"></i> Sahi Jawab!`;
-                        feedback.className = "feedback-msg correct";
-                    } else {
-                        btn.classList.add('wrong-choice');
-                        feedback.innerHTML = `<i class="fas fa-times-circle"></i> Galat Jawab! Sahi uttar hai: ${correctValue}`;
-                        feedback.className = "feedback-msg wrong";
-                    }
-                } else if (currentOptText === correctValue) {
-                    // Sahi option ko automatic green check karein agar user ne galat chuna ho
-                    btn.classList.add('correct-choice');
-                }
-            });
-        }
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            // Correct match logic (Dada, yahan 'correct' variable directly 'A', 'B', 'C' ya 'D' le raha hai)
+            if (selected === correct) {
+                element.style.background = "#28a745";
+                element.style.color = "white";
+                alert("Sahi Jawaab! 🎉");
+            } else {
+                element.style.background = "#dc3545";
+                element.style.color = "white";
+                alert("Galat Jawaab! Sahi Option: " + correct);
+            }
+        };
     </script>
-
-</body>
-</html>
-
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
-</head>
-<body>
-  <h1>
-    Hello, World!
-  </h1>
 </body>
 </html>
