@@ -6,9 +6,9 @@
     <title>Ved Agro Bright - Agriculture Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- ======================================================= -->
-    <!-- FIREBASE INTEGRATION SETUP -->
-    <!-- ======================================================= -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7577834494452853"
+     crossorigin="anonymous"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -27,8 +27,6 @@
         const analytics = getAnalytics(app);
         console.log("Firebase Active on Secure Mobile View!");
     </script>
-    <!-- ======================================================= -->
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -102,13 +100,11 @@
 </head>
 <body>
 
-    <!-- Header Setup for Mobile with Secret Feature -->
     <header>
         <div class="logo" id="secretAdminTrigger">VED AGRO <span>BRIGHT</span></div>
         <i class="fas fa-graduation-cap nav-icon"></i>
     </header>
 
-    <!-- Mobile Responsive Banner -->
     <div class="hero">
         <h1>Ved Agro Bright</h1>
         <p>Agriculture exams (JET, CUET, Supervisor) ki taiyari ab hui aasaan. Sabhi free notes aur tests yahan milenge.</p>
@@ -116,7 +112,6 @@
 
     <div class="app-container">
         
-        <!-- Public Quick Navigation Features Only -->
         <div>
             <h2 class="section-title"><i class="fas fa-star" style="color: #ffcc00;"></i> Quick Features</h2>
             <div class="quick-links-scroll">
@@ -125,7 +120,6 @@
             </div>
         </div>
 
-        <!-- Vertical Mobile Category Stack -->
         <div>
             <h2 class="section-title"><i class="fas fa-book-open"></i> Study Material</h2>
             <div class="category-list">
@@ -162,7 +156,6 @@
 
     </div>
 
-    <!-- Mobile Friendly Footer -->
     <footer>
         <p>&copy; 2026 Ved Agro Bright. Built for Smart Learners.</p>
         <div class="footer-links">
@@ -172,7 +165,6 @@
         </div>
     </footer>
 
-    <!-- Secret Script for Opening Admin Panel -->
     <script>
         const trigger = document.getElementById('secretAdminTrigger');
         let clickCount = 0;
