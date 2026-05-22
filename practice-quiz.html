@@ -1,5 +1,4 @@
-<<!DOCTYPE html>
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -7,9 +6,6 @@
     <title>Daily Practice Quiz - Ved Agro Bright</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- ======================================================= -->
-    <!-- FIREBASE REALTIME DATABASE SETUP -->
-    <!-- ======================================================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -82,8 +78,6 @@
             }
         });
     </script>
-    <!-- ======================================================= -->
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -192,14 +186,12 @@
 </head>
 <body>
 
-    <!-- App Header Top Bar -->
     <header>
         <a href="index.html" class="back-circle"><i class="fas fa-chevron-left"></i></a>
         <h1>Daily Practice Test</h1>
         <div class="header-badge"><i class="fas fa-circle" style="font-size: 7px; animation: pulse 1s infinite;"></i> Live Quiz</div>
     </header>
 
-    <!-- Quiz Banner -->
     <div class="premium-banner">
         <div class="banner-content">
             <h2>अपनी तैयारी जांचें</h2>
@@ -207,11 +199,9 @@
         </div>
     </div>
 
-    <!-- Main Section Structure -->
     <div class="main-wrapper">
         <h3 class="section-headline">Today's Questions</h3>
 
-        <!-- Loading Shimmer State -->
         <div id="loading-skeleton" class="quiz-stack">
             <div class="skeleton-card">
                 <div class="skeleton-line short"></div>
@@ -221,29 +211,33 @@
             </div>
         </div>
 
-        <!-- Live Quiz Injection Stack -->
         <div class="quiz-stack" id="dynamic-quiz-wrapper">
-            <!-- Questions automatically generated via Firebase here -->
-        </div>
+            </div>
     </div>
 
-    <!-- Interactive JavaScript Logic for Options Click Verification -->
     <script>
         function checkAnswer(selectedBtn, selectedText, correctValue, cardId) {
             const card = document.getElementById(`q-card-${cardId}`);
             const allButtons = card.querySelectorAll('.option-btn');
             const feedback = document.getElementById(`feedback-${cardId}`);
             
+            // Spaces aur case issue hatane ke liye pehle se clean kar lete hain
+            const cleanCorrectValue = correctValue.trim().toUpperCase();
+            const cleanSelectedText = selectedText.trim().toUpperCase();
+
             // Sabhi buttons ko disable karein taaki user dobara click na kar sake
             allButtons.forEach(btn => {
                 btn.classList.add('disabled');
                 
-                // Agar button ka text correctValue (jo Admin se aayi hai, jaise 'A', 'B' etc) ke barabar option data se match kare toh use sahi btao
-                const currentOptText = btn.querySelector('.opt-text').innerText;
+                const optPrefix = btn.querySelector('.opt-prefix').innerText.trim().toUpperCase(); // A, B, C, D
+                const currentOptText = btn.querySelector('.opt-text').innerText.trim().toUpperCase(); // Actual Answer Text
+
+                // Yeh check karega ki nikalte waqt kon sa option sach me sahi hai
+                const isThisCorrectOption = (optPrefix === cleanCorrectValue || currentOptText === cleanCorrectValue);
                 
-                // Agar user ne jo click kiya h wo sahi h ya koi b button jo correct answer h use highlight karein
                 if (btn === selectedBtn) {
-                    if (selectedText === correctValue) {
+                    // Agar user ne jo click kiya h wo option letter ya text se match hota h to sahi btao
+                    if (cleanSelectedText === cleanCorrectValue || optPrefix === cleanCorrectValue) {
                         btn.classList.add('correct-choice');
                         feedback.innerHTML = `<i class="fas fa-check-circle"></i> Sahi Jawab!`;
                         feedback.className = "feedback-msg correct";
@@ -252,7 +246,7 @@
                         feedback.innerHTML = `<i class="fas fa-times-circle"></i> Galat Jawab! Sahi uttar hai: ${correctValue}`;
                         feedback.className = "feedback-msg wrong";
                     }
-                } else if (currentOptText === correctValue) {
+                } else if (isThisCorrectOption) {
                     // Sahi option ko automatic green check karein agar user ne galat chuna ho
                     btn.classList.add('correct-choice');
                 }
@@ -260,17 +254,5 @@
         }
     </script>
 
-</body>
-</html>
-
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
-</head>
-<body>
-  <h1>
-    Hello, World!
-  </h1>
 </body>
 </html>
